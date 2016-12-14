@@ -1,0 +1,5 @@
+找到类似这行
+&& ./config --prefix=/Users/wid/Downloads/nginx-1.8.0/../openssl-1.0.2d/.openssl no-shared\
+将 config 修改为 Configure darwin64-x86_64-cc, –prefix 之后的不用修改, 修改后的如:
+&& ./Configure darwin64-x86_64-cc --prefix=/Users/wid/Downloads/nginx-1.8.0/../openssl-1.0.2d/.openssl no-shared\
+修改保存, 反回到上级 nginx 源码目录继续执行 make 即可。
