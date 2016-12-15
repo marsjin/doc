@@ -12,7 +12,7 @@ cpu MHz         : 1200.000
 cache size      : 15360 KB
 physical id     : 1                       #物理封装的处理器的id
 siblings        : 12                      #位于相同物理封装的处理器中的逻辑处理器的数量
-core id         : 0												#每个核心的id
+core id         : 0                       #每个核心的id
 cpu cores       : 6                       #位于相同物理封装的处理器中的内核数量
 apicid          : 16
 initial apicid  : 16
