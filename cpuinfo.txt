@@ -1,7 +1,7 @@
 #cat /proc/cpuinfo
 
 
-processor       : 6												#逻辑处理器的id
+processor       : 6                       #逻辑处理器的id
 vendor_id       : GenuineIntel
 cpu family      : 6
 model           : 63
@@ -10,7 +10,7 @@ stepping        : 2
 microcode       : 50
 cpu MHz         : 1200.000
 cache size      : 15360 KB
-physical id     : 1												#物理封装的处理器的id
+physical id     : 1                       #物理封装的处理器的id
 siblings        : 12                      #位于相同物理封装的处理器中的逻辑处理器的数量
 core id         : 0												#每个核心的id
 cpu cores       : 6                       #位于相同物理封装的处理器中的内核数量
