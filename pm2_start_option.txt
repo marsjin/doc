@@ -29,3 +29,5 @@ executeCommand
 write
 sourceMapSupport
 disableSourceMapSupport
+
+http://pm2.keymetrics.io/docs/usage/pm2-api/
