@@ -1,6 +1,8 @@
 1、pstuil
 wget https://pypi.python.org/packages/source/p/psutil/psutil-2.0.0.tar.gz --no-check-certificate
+Docs:https://github.com/giampaolo/psutil
 
 2、IPy
 wget https://pypi.python.org/packages/source/I/IPy/IPy-0.81.tar.gz --no-check-certificate
+Docs:https://github.com/autocracy/python-ipy
 
