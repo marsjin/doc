@@ -1,0 +1,96 @@
+1、删除部分服务
+redis-cli -c -h 10.130.212.93 -p 8001 cluster nodes |grep 212.93 |awk '{print "./redis-trib.rb del-node ",$2," ",$1}'
+10.130.212.93端口：8000——8011 十二个服务
+
+
+2、redis数据是否倾斜：
+./redis-trib.rb info 10.130.212.56:8008
+
+3、删除某个redis节点
+./redis-trib.rb del-node  10.130.212.93:8000   b643d0dbe0b909b5c6f467fe5664d38ba323f868
+
+4、查询较大的集合健值
+redis-cli  --bigkeys -p 8000 -h 10.130.212.56
+
+
+5、确认是否因monitor命令引起的输出缓冲区占用内存过大的问题
+
+redis-cli  -p 8000 -h 10.130.212.56 info clients
+redis-cli  -p 8000 -h 10.130.212.56 client list | grep -v "oll=0"
+
+//新增配置  
+# cp redis-6379.conf redis-6378.conf && sed -i "s/6379/6378/g" redis-6378.conf  
+# cp redis-6382.conf redis-6385.conf && sed -i "s/6382/6385/g" redis-6385.conf  
+  
+//启动  
+# redis-server /etc/redis/redis-6385.conf > /var/log/redis/redis-6385.log 2>&1 &  
+# redis-server /etc/redis/redis-6378.conf > /var/log/redis/redis-6378.log 2>&1 &  
+
+添加主节点
+# redis-trib.rb add-node 192.168.10.219:6378 192.168.10.219:6379  
+注释：
+192.168.10.219:6378是新增的节点
+192.168.10.219:6379集群任一个旧节点
+
+添加从节点
+# redis-trib.rb add-node --slave --master-id 03ccad2ba5dd1e062464bc7590400441fafb63f2 192.168.10.220:6385 192.168.10.219:6379  
+注释：
+--slave，表示添加的是从节点
+--master-id 03ccad2ba5dd1e062464bc7590400441fafb63f2,主节点的node id，在这里是前面新添加的6378的node id
+192.168.10.220:6385,新节点
+192.168.10.219:6379集群任一个旧节点
+
+重新分配slot
+查看复制打印?
+# redis-trib.rb reshard 192.168.10.219:6378 //下面是主要过程  
+  
+How many slots do you want to move (from 1 to 16384)? 1000 //设置slot数1000  
+What is the receiving node ID? 03ccad2ba5dd1e062464bc7590400441fafb63f2 //新节点node id  
+Please enter all the source node IDs.  
+ Type 'all' to use all the nodes as source nodes for the hash slots.  
+ Type 'done' once you entered all the source nodes IDs.  
+Source node #1:all //表示全部节点重新洗牌  
+Do you want to proceed with the proposed reshard plan (yes/no)? yes //确认重新分  
+新增加的主节点，是没有slots的，
+M: 03ccad2ba5dd1e062464bc7590400441fafb63f2 192.168.10.219:6378
+slots:0-332,5461-5794,10923-11255 (0 slots) master
+主节点如果没有slots的话，存取数据就都不会被选中。
+可以把分配的过程理解成打扑克牌，all表示大家重新洗牌；输入某个主节点的node id，然后在输入done的话，就好比从某个节点，抽牌。
+
+改变从节点的master
+查看复制打印?
+//查看一下6378的从节点  
+# redis-cli -p 6378 cluster nodes | grep slave | grep 03ccad2ba5dd1e062464bc7590400441fafb63f2  
+  
+//将6385加入到新的master  
+# redis-cli -c -p 6385 -h 192.168.10.220  
+192.168.10.220:6385> cluster replicate 5d8ef5a7fbd72ac586bef04fa6de8a88c0671052  //新master的node id  
+OK  
+192.168.10.220:6385> quit  
+  
+//查看新master的slave  
+# redis-cli -p 6379 cluster nodes | grep slave | grep 5d8ef5a7fbd72ac586bef04fa6de8a88c0671052  
+
+删除从节点
+查看复制打印?
+# redis-trib.rb del-node 192.168.10.220:6385 '9c240333476469e8e2c8e80b089c48f389827265' 
+
+删除主节点
+如果主节点有从节点，将从节点转移到其他主节点
+如果主节点有slot，去掉分配的slot，然后再删除主节点
+
+# redis-trib.rb reshard 192.168.10.219:6378 //取消分配的slot,下面是主要过程  
+  
+How many slots do you want to move (from 1 to 16384)? 1000 //被删除master的所有slot数量  
+What is the receiving node ID? 5d8ef5a7fbd72ac586bef04fa6de8a88c0671052 //接收6378节点slot的master  
+Please enter all the source node IDs.  
+ Type 'all' to use all the nodes as source nodes for the hash slots.  
+ Type 'done' once you entered all the source nodes IDs.  
+Source node #1:03ccad2ba5dd1e062464bc7590400441fafb63f2 //被删除master的node-id  
+Source node #2:done   
+  
+Do you want to proceed with the proposed reshard plan (yes/no)? yes //取消slot后，reshard  
+新增master节点后，也进行了这一步操作，当时是分配，现在去掉。反着的。
+查看复制打印?
+# redis-trib.rb del-node 192.168.10.219:6378 '03ccad2ba5dd1e062464bc7590400441fafb63f2'  
+新的master节点被删除了，这样就回到了，就是这篇文章开头，还没有添加节点的状态
