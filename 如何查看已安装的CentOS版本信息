@@ -1,0 +1,99 @@
+如何查看已安装的CentOS版本信息：(10.148.68.53)
+
+1)[root@localhost ~]# cat /proc/version
+
+Linux version 2.6.32-926.573.26.1.www.el6.x86_64 (name@pkg-ns1.et.www.com) (gcc version 4.4.7 20120313 (Red Hat 4.4.7-4) (GCC) ) #1 SMP Thu May 19 15:38:38 CST 2016
+
+2)
+
+[root@localhost ~]# uname -a
+
+Linux WebServer-5B2ED7 2.6.32-926.573.26.1.www.el6.x86_64 #1 SMP Thu May 19 15:38:38 CST 2016 x86_64 x86_64 x86_64 GNU/Linux
+
+3)
+
+[root@localhost ~]# uname -r
+
+2.6.32-926.573.26.1.www.el6.x86_64
+
+2. 查看linux版本：
+
+1) 列出所有版本信息,
+
+[root@localhost ~]# lsb_release -a
+
+LSB Version:    :core-3.1-amd64:core-3.1-ia32:core-3.1-noarch:graphics-3.1-amd64:graphics-3.1-ia32:graphics-3.1-noarch
+
+Distributor ID: CentOS
+
+Description:    CentOS release 6.6 (Final)
+
+Release:        6.6
+
+Codename:      Final
+
+注:这个命令适用于所有的linux，包括RedHat、SUSE、Debian等发行版。
+
+2) 执行cat /etc/issue,例如如下:
+
+[root@localhost ~]# cat /etc/issue
+
+CentOS WebServer 1.7.0 (Final)
+Kernel \r
+Last boot at \d \t
+
+3) 执行cat /etc/redhat-release ,例如如下:
+
+[root@localhost ~]# cat /etc/redhat-release
+
+CentOS release 6.6 (Final)
+
+查看系统是64位还是32位:
+
+1、getconf LONG_BIT or getconf WORD_BIT
+
+[root@localhost ~]# getconf LONG_BIT
+
+64
+
+2、file /bin/ls
+
+[root@localhost ~]# file /bin/ls
+
+/bin/ls: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.18, stripped
+
+3、lsb_release  -a
+
+[root@localhost ~]# lsb_release -a
+
+LSB Version:    :core-3.1-amd64:core-3.1-ia32:core-3.1-noarch:graphics-3.1-amd64:graphics-3.1-ia32:graphics-3.1-noarch
+
+Distributor ID: CentOS
+
+Description:    CentOS release 5.5 (Final)
+
+Release:        5.5
+
+Codename:      Final
+
+4、或者是使用查看文件的方法。
+
+vim /ect/issue
+
+5、hwconfig
+Serial-Number:	6100457300679996
+Summary:	Sugon I620-G20, 2 x Xeon E5-2620 v3 2.40GHz, 126GB / 128GB 2133MHz
+System:		Sugon I620-G20 (Sugon 60G24-US)
+Processors:	2 x Xeon E5-2620 v3 2.40GHz 100MHz FSB (HT enabled, 12 cores, 24 threads)
+Memory:		126GB / 128GB 2133MHz == 8 x 16GB, 16 x empty
+Disk:		sda (megaraid_sas10): 299GB (2%) JBOD == 1 x 299GB ATA SAS3108
+Disk:		sdb (megaraid_sas10): 6.0TB (19%) JBOD == 1 x 6.0TB ATA SAS3108
+Disk:		sdc (megaraid_sas10): 6.0TB (19%) JBOD == 1 x 6.0TB ATA SAS3108
+Disk-Control:	ahci0: Intel C610/X99 series chipset sSATA Controller [AHCI mode]
+Disk-Control:	ahci4: Intel C610/X99 series chipset 6-Port SATA Controller [AHCI mode]
+Disk-Control:	megaraid_sas10: LSI Logic / Symbios Logic MegaRAID SAS-3 3108 [Invader]
+Network:	eth0 (ixgbe): Intel Ethernet Controller 10-Gigabit X540-AT2, 34:97:f6:5b:2e:d7, 10Gb/s <full-duplex>
+Network:	eth1 (ixgbe): Intel Ethernet Controller 10-Gigabit X540-AT2, 34:97:f6:5b:2e:d8, no carrier
+OS:		CentOS 6.6 (Final), Linux 2.6.32-926.573.26.1.www.el6.x86_64 x86_64, 64-bit
+BIOS:		AMI 098 02/22/2016
+Hostname:	WebServer-5B2ED7
